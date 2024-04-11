@@ -11,7 +11,12 @@ concurrency:
 
 jobs:
   close:
-    if: ${{ github.env.TARGET_PR_NUMBER }}
     runs-on: ubuntu-latest
     steps:
+      - name: Fail if PR number is unknown
+        if: ${{ ! env.TARGET_PR_NUMBER }}
+        run: |
+          echo "PR number was not set"
+          exit 1
+
       - run: echo Closing preview for PR $TARGET_PR_NUMBER

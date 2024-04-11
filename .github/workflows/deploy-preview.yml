@@ -27,6 +27,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            console.log(context);
+
             let pr;
             let workflowRun;
             let isLabel = false;
@@ -54,10 +56,10 @@ jobs:
                 } else {
                   // PRs sent from forks do not get the pull_requests field set.
                   // https://github.com/orgs/community/discussions/25220
-                  prNumber = (await github.rest.pulls.list({
+                  pr = (await github.rest.pulls.list({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    head: context.payload.workflow_run.head_sha,
+                    head: workflowRun.head_sha,
                   })).data[0];
                 }
             }

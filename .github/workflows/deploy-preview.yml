@@ -19,14 +19,14 @@ env:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'pull_request_target' && github.event.label.name == 'deploy-preview') }}
+    if: ${{ github.env.TARGET_PR_NUMBER && (github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'pull_request_target' && github.event.label.name == 'deploy-preview')) }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Fail if PR number is unknown
         if: ${{ ! env.TARGET_PR_NUMBER }}
         run: |
-          echo "PR number was not set1"
+          echo "PR number was not set"
           exit 1
 
       - name: Get latest run ID for CI workflow

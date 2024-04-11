@@ -1,0 +1,14 @@
+name: Close preview
+on:
+  pull_request_target:
+    types: [closed]
+
+env:
+  TARGET_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+
+jobs:
+  close:
+    if: ${{ github.env.TARGET_PR_NUMBER }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Closing preview for PR $TARGET_PR_NUMBER

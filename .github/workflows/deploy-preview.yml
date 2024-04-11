@@ -1,29 +1,26 @@
 name: Deploy preview
 
 on:
-  workflow_run:
-    workflows: [ci]
-    types: [completed]
   workflow_dispatch:
     inputs:
       pr:
         required: true
         type: string
         description: PR number
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
   pull_request_target:
     types: [labeled]
 
 jobs:
   deploy:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'pull_request_target' && github.event.label.name == 'deploy-preview') }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print label
-        if: github.event_name == 'pull_request_target'
-        run: |
-          echo PR: ${{ github.event.pull_request.number }}
-          echo Label: ${{ github.event.label.name }}
+      - name: Print info
+        run: cat ${{ github.event_path }}
 
       # TODO: handle label, dispatch
       - name: Download site build from PR

@@ -54,6 +54,8 @@ jobs:
                 }
             }
 
+            console.log("pr", pr);
+
             if (!pr) {
               throw new Error("Could not find PR");
             }
@@ -75,6 +77,8 @@ jobs:
                 console.log(e);
               }
             }
+
+            console.log("workflowRun", workflowRun);
 
             if (!workflowRun) {
               console.log(`Could not find workflow run for PR ${pr.number}`);

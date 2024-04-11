@@ -18,3 +18,4 @@ jobs:
         with:
           name: site
           path: site
+          retention-days: 7

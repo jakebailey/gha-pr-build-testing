@@ -88,7 +88,7 @@ jobs:
 
             console.log("workflowRun", workflowRun);
 
-            if (!workflowRun) {
+            if (!workflowRun || workflowRun.conclusion !== "success") {
               console.log(`Could not find workflow run for PR ${pr.number}`);
               return null;
             }

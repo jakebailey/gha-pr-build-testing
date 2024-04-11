@@ -68,7 +68,7 @@ jobs:
 
             if (!pr.labels.some((label) => label.name === "deploy-preview")) {
               console.log(`PR ${pr.number} does not have the deploy-preview label`);
-              return;
+              return null;
             }
 
             if (!workflowRun) {
@@ -86,7 +86,7 @@ jobs:
 
             if (!workflowRun) {
               console.log(`Could not find workflow run for PR ${pr.number}`);
-              return;
+              return null;
             }
 
             const result = { pr: pr.number, runId: workflowRun.id };

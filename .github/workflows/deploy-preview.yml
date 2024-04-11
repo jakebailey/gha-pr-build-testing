@@ -29,6 +29,7 @@ jobs:
           script: |
             let pr;
             let workflowRun;
+            let isLabel = false;
             switch (context.eventName) {
               case "workflow_dispatch":
                 pr = (await github.rest.pulls.get({
@@ -43,7 +44,14 @@ jobs:
               case "workflow_run":
                 workflowRun = context.payload.workflow_run;
                 pr = workflowRun.pull_requests[0];
-                if (!pr) {
+                if (pr) {
+                  // Reload the PR to get the labels.
+                  pr = (await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                  })).data;
+                } else {
                   // PRs sent from forks do not get the pull_requests field set.
                   // https://github.com/orgs/community/discussions/25220
                   prNumber = (await github.rest.pulls.list({

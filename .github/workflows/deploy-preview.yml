@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get workflow run ID
-        id: run-id
+      - name: Get PR/workflow run info
+        id: get-info
         uses: actions/github-script@v7
         with:
           script: |
@@ -89,20 +89,22 @@ jobs:
               return;
             }
 
-            return { pr: pr.number, runId: workflowRun.id };
+            const result = { pr: pr.number, runId: workflowRun.id };
+            console.log(result);
+            return result;
 
       - name: Download site build from PR
-        if: ${{ steps.run-id.outputs.result }}
+        if: ${{ steps.get-info.outputs.result }}
         uses: actions/download-artifact@v4
         with:
           name: site
           path: site
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ steps.run-id.outputs.result.runId }}
+          run-id: ${{ fromJson(steps.get-info.outputs.result).runId }}
 
       - name: Deploy
         id: deploy
-        if: ${{ steps.run-id.outputs.result }}
+        if: ${{ steps.get-info.outputs.result }}
         run: |
           echo deploying site
           ls -R site
@@ -120,4 +122,4 @@ jobs:
           app_location: 'site'
           skip_app_build: true
           production_branch: v2
-          deployment_environment: ${{ steps.run-id.outputs.result.pr }}
+          deployment_environment: ${{ fromJson(steps.get-info.outputs.result).pr }}

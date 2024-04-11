@@ -1,0 +1,35 @@
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        required: true
+        type: string
+        description: PR number
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print label
+        if: github.event_name == 'pull_request_target'
+        run: |
+          echo PR: ${{ github.event.pull_request.number }}
+          echo Label: ${{ github.event.label.name }}
+
+      # TODO: handle label, dispatch
+      - name: Download site build from PR
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - run: ls -R

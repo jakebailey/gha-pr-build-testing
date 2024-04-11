@@ -3,20 +3,11 @@ on:
   pull_request_target:
     types: [closed]
 
-env:
-  TARGET_PR_NUMBER: ${{ github.event.pull_request.number }}
-
 concurrency:
-  group: preview-${{ github.env.TARGET_PR_NUMBER }}
+  group: preview
 
 jobs:
   close:
     runs-on: ubuntu-latest
     steps:
-      - name: Fail if PR number is unknown
-        if: ${{ ! env.TARGET_PR_NUMBER }}
-        run: |
-          echo "PR number was not set"
-          exit 1
-
-      - run: echo Closing preview for PR $TARGET_PR_NUMBER
+      - run: echo Closing preview for PR ${{ github.event.pull_request.number }}

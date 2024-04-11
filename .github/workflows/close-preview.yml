@@ -6,6 +6,9 @@ on:
 env:
   TARGET_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
 
+concurrency:
+  group: preview-${{ github.env.TARGET_PR_NUMBER }}
+
 jobs:
   close:
     if: ${{ github.env.TARGET_PR_NUMBER }}

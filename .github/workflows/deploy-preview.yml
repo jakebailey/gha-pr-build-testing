@@ -42,15 +42,17 @@ jobs:
               workflowRun = github.event.workflow_run;
             } else {
               let pr;
-              if (context.eventName === 'workflow_dispatch') {
+              if (context.eventName === 'pull_request_target') {
+                pr = context.payload.pull_request;
+              } else {
                 pr = (await github.rest.pulls.get({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: TARGET_PR_NUMBER,
                 })).data;
-              } else {
-                pr = context.payload.pull_request;
               }
+
+              console.log(pr);
 
               // https://github.com/orgs/community/discussions/24709
               workflowRun = (await github.rest.actions.listWorkflowRuns({
@@ -62,6 +64,8 @@ jobs:
                 per_page: 1,
               })).data.workflow_runs[0];
             }
+
+            console.log(workflowRun);
 
             if (!workflowRun || workflowRun.conclusion !== 'success') {
               console.log(`Could not find workflow run for PR ${TARGET_PR_NUMBER}`);

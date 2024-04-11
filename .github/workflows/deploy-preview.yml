@@ -29,9 +29,10 @@ jobs:
           result-encoding: string
           script: |
             let prNumber;
+            console.log(context);
             switch (context.eventName) {
               case "workflow_dispatch":
-                prNumber = context.payload.inputs.pr;
+                prNumber = context.event.inputs.pr;
                 break;
               case "workflow_run":
                 prNumber = context.event.workflow_run.pull_requests[0]?.number;
@@ -75,7 +76,7 @@ jobs:
               } else {
                 let pr;
                 if (context.eventName === "pull_request_target") {
-                  pr = context.payload.pull_request;
+                  pr = context.event.pull_request;
                 } else {
                   pr = (await github.rest.pulls.get({
                     owner: context.repo.owner,

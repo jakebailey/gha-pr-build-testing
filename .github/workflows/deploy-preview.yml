@@ -14,7 +14,7 @@ on:
     types: [labeled]
 
 env:
-  TARGET_PR_NUMBER: ${{ github.event.inputs.pr || github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}
+  TARGET_PR_NUMBER: ${{ inputs.pr || github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}
   TARGET_RUN_ID: ${{ github.event.workflow_run.id }}
 
 concurrency:

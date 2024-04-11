@@ -1,5 +1,11 @@
 name: Close preview
 on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        required: true
+        type: string
+        description: PR number
   pull_request_target:
     types: [closed]
 
@@ -10,4 +16,4 @@ jobs:
   close:
     runs-on: ubuntu-latest
     steps:
-      - run: echo Closing preview for PR ${{ github.event.pull_request.number }}
+      - run: echo Closing preview for PR ${{ inputs.pr || github.event.pull_request.number }}

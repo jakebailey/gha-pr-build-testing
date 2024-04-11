@@ -41,37 +41,43 @@ jobs:
             const TARGET_PR_NUMBER = +process.env.TARGET_PR_NUMBER;
 
             let workflowRun;
-            if (github.eventName === 'workflow_run') {
-              workflowRun = github.event.workflow_run;
-            } else {
-              let pr;
-              if (context.eventName === 'pull_request_target') {
-                pr = context.payload.pull_request;
+            try {
+                if (github.eventName === 'workflow_run') {
+                workflowRun = github.event.workflow_run;
               } else {
-                pr = (await github.rest.pulls.get({
+                let pr;
+                if (context.eventName === 'pull_request_target') {
+                  pr = context.payload.pull_request;
+                } else {
+                  pr = (await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: TARGET_PR_NUMBER,
+                  })).data;
+                }
+
+                workflowRun = (await github.rest.actions.listWorkflowRuns({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  pull_number: TARGET_PR_NUMBER,
-                })).data;
+                  workflow_id: 'ci.yml',
+                  head_sha: pr.head.sha,
+                })).data.workflow_runs[0];
               }
-
-              console.log(pr);
-
-              workflowRun = (await github.rest.actions.listWorkflowRuns({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: 'ci.yml',
-                head_sha: pr.head.sha,
-              })).data.workflow_runs[0];
+            } catch (e) {
+              console.log(e);
             }
 
-            console.log(workflowRun);
-
-            if (!workflowRun || workflowRun.conclusion !== 'success') {
+            if (!workflowRun) {
               console.log(`Could not find workflow run for PR ${TARGET_PR_NUMBER}`);
               return;
             }
 
+            if (workflowRun.conclusion !== 'success') {
+              console.log(`Found ${workflowRun.html_url}, but it did not succeed`);
+              return;
+            }
+
+            console.log(`Found ${workflowRun.html_url}`);
             core.exportVariable('TARGET_RUN_ID', workflowRun.id);
 
       - name: Download site build from PR

@@ -106,6 +106,7 @@ jobs:
               return;
             }
 
+            console.log(workflowRun);
             console.log(`Found ${workflowRun.html_url}`);
             return workflowRun.id;
 

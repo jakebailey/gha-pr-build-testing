@@ -17,4 +17,4 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           name: site
-          path: site/
+          path: site
